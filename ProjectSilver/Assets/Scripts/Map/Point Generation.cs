@@ -1,51 +1,117 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DelaunatorSharp;
+using System.Linq;
+using DelaunatorSharp.Unity.Extensions;
+using System;
+using DelaunatorSharp.Unity;
 
 public class PointGeneration : MonoBehaviour
 {
-    [SerializeField] private int planeLen = 30;
-    [SerializeField] private int nodeCount = 0;
-    [SerializeField] private int pathCount = 12;
+    [SerializeField] GameObject trianglePointPrefab;
 
-    [SerializeField] private List<Vector2> points;
+    private List<IPoint> points = new List<IPoint>();
+    private Delaunator delaunator;
+    private Transform PointsContainer;
+    private Transform TrianglesContainer;
 
+    [SerializeField] float triangleEdgeWidth = .01f;
 
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] Color triangleEdgeColor = Color.black;
+    [SerializeField] Material lineMaterial;
+
+    [SerializeField] float generationSize = 3;
+    [SerializeField] float generationMinDistance = .2f;
+
+    [SerializeField] private List<Vector2> oldPoints;
+
+    private void Start()
     {
-        nodeCount = planeLen * planeLen / 12;
+        Clear();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Create()
     {
-        
+        if (points.Count < 3) return;
+
+        Clear();
+
+        delaunator = new Delaunator(points.ToArray());
+
+        CreateTriangle();
+    }
+
+    private void Clear()
+    {
+        CreateNewContainers();
+
+        delaunator = null;
+    }
+
+    private void CreateTriangle()
+    {
+        if (delaunator == null) return;
+
+        delaunator.ForEachTriangleEdge(edge =>
+        {
+            CreateLine(TrianglesContainer, $"TriangleEdge - {edge.Index}", new Vector3[] { edge.P.ToVector3(), edge.Q.ToVector3() }, triangleEdgeColor, triangleEdgeWidth, 0);
+
+            var pointGameObject = Instantiate(trianglePointPrefab, PointsContainer);
+            pointGameObject.transform.SetPositionAndRotation(edge.P.ToVector3(), Quaternion.identity);
+        });
+    }
+
+    private void CreateLine(Transform container, string name, Vector3[] points, Color color, float width, int order = 1)
+    {
+        var lineGameObject = new GameObject(name);
+        lineGameObject.transform.parent = container;
+        var lineRenderer = lineGameObject.AddComponent<LineRenderer>();
+
+        lineRenderer.SetPositions(points);
+
+        lineRenderer.material = lineMaterial ?? new Material(Shader.Find("Standard"));
+        lineRenderer.startColor = color;
+        lineRenderer.endColor = color;
+        lineRenderer.startWidth = width;
+        lineRenderer.endWidth = width;
+        lineRenderer.sortingOrder = order;
+    }
+
+    private void CreateNewContainers()
+    {
+        CreateNewPointsContainer();
+        CreateNewTrianglesContainer();
+    }
+
+    private void CreateNewPointsContainer()
+    {
+        if (PointsContainer != null)
+        {
+            Destroy(PointsContainer.gameObject);
+        }
+
+        PointsContainer = new GameObject(nameof(PointsContainer)).transform;
+    }
+
+    private void CreateNewTrianglesContainer()
+    {
+        if (TrianglesContainer != null)
+        {
+            Destroy(TrianglesContainer.gameObject);
+        }
+
+        TrianglesContainer = new GameObject(nameof(TrianglesContainer)).transform;
     }
 
     public void Generate()
     {
-        points.Add(new Vector2(0, planeLen / 2));
-        points.Add(new Vector2(planeLen, planeLen / 2));
+        Clear();
 
-        Vector2 center = new Vector2(planeLen / 2, planeLen / 2);
-
-        for (int i = 0; i < nodeCount; i++)
-        {
-            while(true)
-            {
-                Vector2 point = new Vector2(UnityEngine.Random.Range(0, planeLen), UnityEngine.Random.Range(0, planeLen));
-
-                var disFromCenter = (point - center).magnitude;
-
-                bool inCircle = disFromCenter <= planeLen * planeLen / 4;
-
-                if (points[i] != point && inCircle)
-                {
-                    points.Add(point);
-                    break;
-                }
-            }
-        }
+        var sampler = UniformPoissonDiskSampler.SampleCircle(Vector2.zero, generationSize, generationMinDistance);
+        points = sampler.Select(point => new Vector2(point.x, point.y)).ToPoints().ToList();
+        Debug.Log($"Generated Points Count {points.Count}");
+        Create();
+        return;
     }
 }
