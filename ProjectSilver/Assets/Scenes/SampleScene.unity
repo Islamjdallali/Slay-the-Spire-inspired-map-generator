@@ -285,10 +285,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb69c69bd09f05b418feb7ae285a441b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  planeLen: 30
-  nodeCount: 0
-  pathCount: 12
-  points: []
+  trianglePointPrefab: {fileID: 5961768956659207801, guid: c31800eeb430deb4b96b784ea16dd9cf, type: 3}
+  triangleEdgeWidth: 0.01
+  triangleEdgeColor: {r: 0, g: 0, b: 0, a: 1}
+  lineMaterial: {fileID: 2100000, guid: fe60369f18361df418fb98a1ee9d6ea5, type: 2}
+  generationSize: 3
+  generationMinDistance: 0.2
+  oldPoints: []
 --- !u!4 &465653389
 Transform:
   m_ObjectHideFlags: 0
