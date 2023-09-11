@@ -7,6 +7,7 @@ using DelaunatorSharp.Unity.Extensions;
 using System;
 using DelaunatorSharp.Unity;
 
+
 public class PointGeneration : MonoBehaviour
 {
     [SerializeField] GameObject trianglePointPrefab;
@@ -15,7 +16,11 @@ public class PointGeneration : MonoBehaviour
     [SerializeField] private IPoint startPoint;
     [SerializeField] private IPoint endPoint;
 
+    int startPointIndex;
+    int endPointIndex;
+
     private List<IPoint> points = new List<IPoint>();
+    private List<Node> nodes = new List<Node>();
     private Delaunator delaunator;
     private Transform PointsContainer;
     private Transform TrianglesContainer;
@@ -27,6 +32,35 @@ public class PointGeneration : MonoBehaviour
 
     [SerializeField] float generationSize = 3;
     [SerializeField] float generationMinDistance = .2f;
+
+    public enum eNodeType
+    {
+        eDefault,
+        eStart,
+        eEnd
+    }
+
+    public struct Node
+    {
+        public IPoint point;
+        public eNodeType nodeType;
+
+        public Node(IPoint p, eNodeType t)
+        {
+            point = p;
+            nodeType = t;
+        }
+
+        public void SetStart()
+        {
+            nodeType = eNodeType.eStart;
+        }
+
+        public void SetEnd()
+        {
+            nodeType = eNodeType.eEnd;
+        }
+    }
 
     private void Start()
     {
@@ -65,14 +99,18 @@ public class PointGeneration : MonoBehaviour
 
         double y = 0;
 
+
         for (int i = 0; i < points.Count; i++)
         {
             if (y > points[i].Y)
             {
                 y = points[i].Y;
                 startPoint = points[i];
+                startPointIndex = i;
             }
         }
+
+        nodes[startPointIndex].SetStart();
 
         for (int i = 0; i < points.Count; i++)
         {
@@ -80,8 +118,11 @@ public class PointGeneration : MonoBehaviour
             {
                 y = points[i].Y;
                 endPoint = points[i];
+                endPointIndex = i;
             }
         }
+
+        nodes[endPointIndex].SetEnd();
 
         var startPointGameObject = Instantiate(startPointPrefab, PointsContainer);
         startPointGameObject.transform.SetPositionAndRotation(startPoint.ToVector3(), Quaternion.identity);
@@ -138,6 +179,12 @@ public class PointGeneration : MonoBehaviour
 
         var sampler = UniformPoissonDiskSampler.SampleCircle(Vector2.zero, generationSize, generationMinDistance);
         points = sampler.Select(point => new Vector2(point.x, point.y)).ToPoints().ToList();
+
+        for (int i = 0; i < points.Count; i++)
+        {
+            nodes.Add(new Node(points[i], eNodeType.eDefault));
+        }
+
         Debug.Log($"Generated Points Count {points.Count}");
         Create();
         return;
