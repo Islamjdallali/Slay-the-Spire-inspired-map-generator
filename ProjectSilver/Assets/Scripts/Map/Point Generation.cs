@@ -13,6 +13,7 @@ public class PointGeneration : MonoBehaviour
     [SerializeField] GameObject startPointPrefab;
 
     [SerializeField] private IPoint startPoint;
+    [SerializeField] private IPoint endPoint;
 
     private List<IPoint> points = new List<IPoint>();
     private Delaunator delaunator;
@@ -73,8 +74,20 @@ public class PointGeneration : MonoBehaviour
             }
         }
 
-        var pointGameObject = Instantiate(startPointPrefab, PointsContainer);
-        pointGameObject.transform.SetPositionAndRotation(startPoint.ToVector3(), Quaternion.identity);
+        for (int i = 0; i < points.Count; i++)
+        {
+            if (y < points[i].Y)
+            {
+                y = points[i].Y;
+                endPoint = points[i];
+            }
+        }
+
+        var startPointGameObject = Instantiate(startPointPrefab, PointsContainer);
+        startPointGameObject.transform.SetPositionAndRotation(startPoint.ToVector3(), Quaternion.identity);
+
+        var endPointGameObject = Instantiate(startPointPrefab, PointsContainer);
+        endPointGameObject.transform.SetPositionAndRotation(endPoint.ToVector3(), Quaternion.identity);
     }
 
     private void CreateLine(Transform container, string name, Vector3[] points, Color color, float width, int order = 1)
