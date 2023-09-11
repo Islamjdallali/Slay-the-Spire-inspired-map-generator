@@ -33,35 +33,6 @@ public class PointGeneration : MonoBehaviour
     [SerializeField] float generationSize = 3;
     [SerializeField] float generationMinDistance = .2f;
 
-    public enum eNodeType
-    {
-        eDefault,
-        eStart,
-        eEnd
-    }
-
-    public struct Node
-    {
-        public IPoint point;
-        public eNodeType nodeType;
-
-        public Node(IPoint p, eNodeType t)
-        {
-            point = p;
-            nodeType = t;
-        }
-
-        public void SetStart()
-        {
-            nodeType = eNodeType.eStart;
-        }
-
-        public void SetEnd()
-        {
-            nodeType = eNodeType.eEnd;
-        }
-    }
-
     private void Start()
     {
         Clear();
@@ -92,9 +63,6 @@ public class PointGeneration : MonoBehaviour
         delaunator.ForEachTriangleEdge(edge =>
         {
             CreateLine(TrianglesContainer, $"TriangleEdge - {edge.Index}", new Vector3[] { edge.P.ToVector3(), edge.Q.ToVector3() }, triangleEdgeColor, triangleEdgeWidth, 0);
-
-            var pointGameObject = Instantiate(trianglePointPrefab, PointsContainer);
-            pointGameObject.transform.SetPositionAndRotation(edge.P.ToVector3(), Quaternion.identity);
         });
 
         double y = 0;
@@ -124,11 +92,19 @@ public class PointGeneration : MonoBehaviour
 
         nodes[endPointIndex].SetEnd();
 
-        var startPointGameObject = Instantiate(startPointPrefab, PointsContainer);
-        startPointGameObject.transform.SetPositionAndRotation(startPoint.ToVector3(), Quaternion.identity);
-
-        var endPointGameObject = Instantiate(startPointPrefab, PointsContainer);
-        endPointGameObject.transform.SetPositionAndRotation(endPoint.ToVector3(), Quaternion.identity);
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            if (nodes[i].nodeType == Node.eNodeType.eDefault)
+            {
+                var pointGameObject = Instantiate(trianglePointPrefab, PointsContainer);
+                pointGameObject.transform.SetPositionAndRotation(nodes[i].point.ToVector3(), Quaternion.identity);
+            }
+            else
+            {
+                var pointGameObject = Instantiate(startPointPrefab, PointsContainer);
+                pointGameObject.transform.SetPositionAndRotation(nodes[i].point.ToVector3(), Quaternion.identity);
+            }
+        }
     }
 
     private void CreateLine(Transform container, string name, Vector3[] points, Color color, float width, int order = 1)
@@ -182,7 +158,7 @@ public class PointGeneration : MonoBehaviour
 
         for (int i = 0; i < points.Count; i++)
         {
-            nodes.Add(new Node(points[i], eNodeType.eDefault));
+            nodes.Add(new Node(points[i], Node.eNodeType.eDefault));
         }
 
         Debug.Log($"Generated Points Count {points.Count}");
