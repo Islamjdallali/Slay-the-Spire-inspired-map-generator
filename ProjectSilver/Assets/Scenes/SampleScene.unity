@@ -286,12 +286,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trianglePointPrefab: {fileID: 5961768956659207801, guid: c31800eeb430deb4b96b784ea16dd9cf, type: 3}
-  triangleEdgeWidth: 0.01
+  startPointPrefab: {fileID: 5961768956659207801, guid: 6c0e382d52a86f448ba06f8ff7c14a96, type: 3}
+  triangleEdgeWidth: 0.05
   triangleEdgeColor: {r: 0, g: 0, b: 0, a: 1}
   lineMaterial: {fileID: 2100000, guid: fe60369f18361df418fb98a1ee9d6ea5, type: 2}
-  generationSize: 3
-  generationMinDistance: 0.2
-  oldPoints: []
+  generationSize: 5
+  generationMinDistance: 2
 --- !u!4 &465653389
 Transform:
   m_ObjectHideFlags: 0

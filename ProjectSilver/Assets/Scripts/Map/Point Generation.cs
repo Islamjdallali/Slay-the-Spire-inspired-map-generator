@@ -10,6 +10,9 @@ using DelaunatorSharp.Unity;
 public class PointGeneration : MonoBehaviour
 {
     [SerializeField] GameObject trianglePointPrefab;
+    [SerializeField] GameObject startPointPrefab;
+
+    [SerializeField] private IPoint startPoint;
 
     private List<IPoint> points = new List<IPoint>();
     private Delaunator delaunator;
@@ -23,8 +26,6 @@ public class PointGeneration : MonoBehaviour
 
     [SerializeField] float generationSize = 3;
     [SerializeField] float generationMinDistance = .2f;
-
-    [SerializeField] private List<Vector2> oldPoints;
 
     private void Start()
     {
@@ -60,6 +61,20 @@ public class PointGeneration : MonoBehaviour
             var pointGameObject = Instantiate(trianglePointPrefab, PointsContainer);
             pointGameObject.transform.SetPositionAndRotation(edge.P.ToVector3(), Quaternion.identity);
         });
+
+        double y = 0;
+
+        for (int i = 0; i < points.Count; i++)
+        {
+            if (y > points[i].Y)
+            {
+                y = points[i].Y;
+                startPoint = points[i];
+            }
+        }
+
+        var pointGameObject = Instantiate(startPointPrefab, PointsContainer);
+        pointGameObject.transform.SetPositionAndRotation(startPoint.ToVector3(), Quaternion.identity);
     }
 
     private void CreateLine(Transform container, string name, Vector3[] points, Color color, float width, int order = 1)
