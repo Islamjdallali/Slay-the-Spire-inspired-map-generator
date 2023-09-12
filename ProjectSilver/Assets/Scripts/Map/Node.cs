@@ -1,6 +1,4 @@
 using DelaunatorSharp;
-using System.Collections;
-using System.Collections.Generic;
 
 public class Node
 {
@@ -13,6 +11,10 @@ public class Node
 
     public IPoint point;
     public eNodeType nodeType;
+
+    public float g { get; private set; }
+    public float h { get; private set; }
+    public float f => g = h;
 
     public Node(IPoint p, eNodeType t)
     {
