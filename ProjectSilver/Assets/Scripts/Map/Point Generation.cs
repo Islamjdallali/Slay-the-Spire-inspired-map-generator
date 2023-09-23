@@ -41,6 +41,11 @@ public class PointGeneration : MonoBehaviour
     public void GeneratePath()
     {
         path = FindPath(nodes[startPointIndex], nodes[endPointIndex]);
+
+        for (int i = 0; i < path.Count; i++)
+        {
+            Debug.Log("Path (" + i + ") is : " + path[i].point);
+        }
     }
 
     private void Create()
@@ -164,7 +169,7 @@ public class PointGeneration : MonoBehaviour
             {
                 if (t.f < current.f || t.f == current.f && t.h < current.h)
                 {
-                    Debug.Log("Value is : " + t.point);
+                    //Debug.Log("Value is : " + t.point);
                     current = t;
                 }
             }
@@ -178,10 +183,15 @@ public class PointGeneration : MonoBehaviour
                 
                 var currentPathNode = targetNode;
                 var path = new List<Node>();
-                if (currentPathNode != startNode)
+                while (currentPathNode != startNode)
                 {
                     path.Add(currentPathNode);
-                    current = currentPathNode.connection;
+                    currentPathNode = currentPathNode.connection;
+                }
+
+                if (currentPathNode == startNode)
+                {
+                    path.Add(startNode);
                 }
 
                 return path;
@@ -206,7 +216,7 @@ public class PointGeneration : MonoBehaviour
                     neighbour.SetG(costToNeighbour);
                     neighbour.SetConnection(current);
 
-                    Debug.Log("Neighbour : " + neighbour.point + " Set connection to : " + current.point);
+                    //Debug.Log("Neighbour : " + neighbour.point + " Set connection to : " + current.point);
 
                     if (!inSearch)
                     {
