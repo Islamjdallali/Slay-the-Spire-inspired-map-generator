@@ -31,9 +31,16 @@ public class PointGeneration : MonoBehaviour
     [SerializeField] float generationSize = 3;
     [SerializeField] float generationMinDistance = .2f;
 
+    [SerializeField] List<Node> path = new List<Node>();
+
     private void Start()
     {
         Clear();
+    }
+
+    public void GeneratePath()
+    {
+        path = FindPath(nodes[startPointIndex], nodes[endPointIndex]);
     }
 
     private void Create()
@@ -78,13 +85,6 @@ public class PointGeneration : MonoBehaviour
 
         nodes[startPointIndex].SetStart();
 
-        var n = GetNeighbouringNodes(startPointIndex);
-
-        for (int i = 0; i < n.Count; i++)
-        {
-            Debug.Log(n[i].point);
-        }
-
         for (int i = 0; i < points.Count; i++)
         {
             if (y < points[i].Y)
@@ -110,6 +110,11 @@ public class PointGeneration : MonoBehaviour
                 pointGameObject.transform.SetPositionAndRotation(nodes[i].point.ToVector3(), Quaternion.identity);
             }
         }
+    }
+
+    float GetDistance(IPoint self,IPoint other)
+    {
+        return Vector2.Distance(self.ToVector2(), other.ToVector2());
     }
 
     List<Node> GetNeighbouringNodes(int index)
@@ -151,20 +156,56 @@ public class PointGeneration : MonoBehaviour
 
         while (toSearch.Any())
         {
+            Debug.Log("Searching");
+
             var current = toSearch[0];
-            foreach(var t in toSearch)
+            var currentIndex = 0;
+            foreach(var t in toSearch.Select((value,i) => new { i,value}))
             {
-                if (t.f < current.f || t.f == current.f && t.h < current.h)
+                if (t.value.f < current.f || t.value.f == current.f && t.value.h < current.h)
                 {
-                    current = t;
+                    current = t.value;
+                    currentIndex = t.i;
                 }
             }
+
             processed.Add(current);
             toSearch.Remove(current);
 
-            foreach (var t in delaunator.GetTrianglePoints(0))
+            if (current == targetNode) 
             {
+                Debug.Log("Target Reached");
+                
+                var currentPathNode = targetNode;
+                var path = new List<Node>();
+                if (currentPathNode != startNode)
+                {
+                    path.Add(currentPathNode);
+                    current = currentPathNode.connection;
+                }
 
+                return path;
+            }
+
+            foreach (var neighbour in GetNeighbouringNodes(currentIndex).Where(t => !processed.Contains(t)))
+            {
+                var inSearch = toSearch.Contains(neighbour);
+
+                var costToNeighbour = current.g + GetDistance(current.point, neighbour.point);
+
+                if (!inSearch || costToNeighbour < neighbour.g)
+                {
+                    neighbour.SetG(costToNeighbour);
+                    neighbour.SetConnection(current);
+
+                    Debug.Log("Neighbour : " + neighbour.point + " Set connection to : " + current.point);
+
+                    if (!inSearch)
+                    {
+                        neighbour.SetH(GetDistance(neighbour.point, targetNode.point));
+                        toSearch.Add(neighbour);
+                    }
+                }
             }
 
         }
