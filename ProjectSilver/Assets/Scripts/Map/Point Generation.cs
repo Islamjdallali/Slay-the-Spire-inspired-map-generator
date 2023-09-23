@@ -5,6 +5,7 @@ using DelaunatorSharp;
 using System.Linq;
 using DelaunatorSharp.Unity.Extensions;
 using DelaunatorSharp.Unity;
+using Unity.VisualScripting;
 
 public class PointGeneration : MonoBehaviour
 {
@@ -22,10 +23,12 @@ public class PointGeneration : MonoBehaviour
     private Delaunator delaunator;
     private Transform PointsContainer;
     private Transform TrianglesContainer;
+    private Transform PathsContainer;
 
     [SerializeField] float triangleEdgeWidth = .01f;
 
     [SerializeField] Color triangleEdgeColor = Color.black;
+    [SerializeField] Color pathColor = Color.green;
     [SerializeField] Material lineMaterial;
 
     [SerializeField] float generationSize = 3;
@@ -44,7 +47,11 @@ public class PointGeneration : MonoBehaviour
 
         for (int i = 0; i < path.Count; i++)
         {
-            Debug.Log("Path (" + i + ") is : " + path[i].point);
+            if (i + 1 !=  path.Count)
+            {
+                CreateLine(PathsContainer, $"Path - {path[i]}", new Vector3[] { path[i].point.ToVector3(), path[i + 1].point.ToVector3() }, pathColor, triangleEdgeWidth, 0);
+            }
+            //Debug.Log("Path (" + i + ") is : " + path[i].point);
         }
     }
 
@@ -161,7 +168,7 @@ public class PointGeneration : MonoBehaviour
 
         while (toSearch.Any())
         {
-            Debug.Log("Searching");
+            //Debug.Log("Searching");
 
             var current = toSearch[0];
             var currentIndex = 0;
@@ -179,7 +186,7 @@ public class PointGeneration : MonoBehaviour
 
             if (current == targetNode) 
             {
-                Debug.Log("Target Reached");
+                //Debug.Log("Target Reached");
                 
                 var currentPathNode = targetNode;
                 var path = new List<Node>();
