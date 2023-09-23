@@ -160,12 +160,12 @@ public class PointGeneration : MonoBehaviour
 
             var current = toSearch[0];
             var currentIndex = 0;
-            foreach(var t in toSearch.Select((value,i) => new { i,value}))
+            foreach(var t in toSearch)
             {
-                if (t.value.f < current.f || t.value.f == current.f && t.value.h < current.h)
+                if (t.f < current.f || t.f == current.f && t.h < current.h)
                 {
-                    current = t.value;
-                    currentIndex = t.i;
+                    Debug.Log("Value is : " + t.point);
+                    current = t;
                 }
             }
 
@@ -185,6 +185,14 @@ public class PointGeneration : MonoBehaviour
                 }
 
                 return path;
+            }
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (nodes[i].point == current.point)
+                {
+                    currentIndex = i;
+                }
             }
 
             foreach (var neighbour in GetNeighbouringNodes(currentIndex).Where(t => !processed.Contains(t)))
