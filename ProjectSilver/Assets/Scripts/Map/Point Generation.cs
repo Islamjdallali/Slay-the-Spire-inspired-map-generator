@@ -6,6 +6,7 @@ using System.Linq;
 using DelaunatorSharp.Unity.Extensions;
 using DelaunatorSharp.Unity;
 using Unity.VisualScripting;
+using static Node;
 
 public class PointGeneration : MonoBehaviour
 {
@@ -43,15 +44,18 @@ public class PointGeneration : MonoBehaviour
 
     public void GeneratePath()
     {
-        path = FindPath(nodes[startPointIndex], nodes[endPointIndex]);
 
-        for (int i = 0; i < path.Count; i++)
+        for (int j = 0; j < 20; j++)
         {
-            if (i + 1 !=  path.Count)
+            path = FindPath(nodes[startPointIndex], nodes[endPointIndex]);
+
+            for (int i = 0; i < path.Count; i++)
             {
-                CreateLine(PathsContainer, $"Path - {path[i]}", new Vector3[] { path[i].point.ToVector3(), path[i + 1].point.ToVector3() }, pathColor, triangleEdgeWidth, 0);
+                if (i + 1 != path.Count)
+                {
+                    CreateLine(PathsContainer, $"Path - {path[i]}", new Vector3[] { path[i].point.ToVector3(), path[i + 1].point.ToVector3() }, pathColor, triangleEdgeWidth, 0);
+                }
             }
-            //Debug.Log("Path (" + i + ") is : " + path[i].point);
         }
     }
 
@@ -165,6 +169,14 @@ public class PointGeneration : MonoBehaviour
     {
         var toSearch = new List<Node>() { startNode};
         var processed = new List<Node>();
+        var nodeForPaths = new List<Node>(nodes);
+
+        int randIndex = Random.Range(0, nodeForPaths.Count);
+
+        if (nodeForPaths[randIndex].nodeType == eNodeType.eDefault)
+        {
+            nodeForPaths.RemoveAt(randIndex);
+        }
 
         while (toSearch.Any())
         {
@@ -204,9 +216,9 @@ public class PointGeneration : MonoBehaviour
                 return path;
             }
 
-            for (int i = 0; i < nodes.Count; i++)
+            for (int i = 0; i < nodeForPaths.Count; i++)
             {
-                if (nodes[i].point == current.point)
+                if (nodeForPaths[i].point == current.point)
                 {
                     currentIndex = i;
                 }
