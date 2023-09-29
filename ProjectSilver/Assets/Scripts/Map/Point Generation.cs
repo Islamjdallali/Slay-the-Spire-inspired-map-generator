@@ -45,7 +45,7 @@ public class PointGeneration : MonoBehaviour
     public void GeneratePath()
     {
 
-        for (int j = 0; j < 20; j++)
+        for (int j = 0; j < 3; j++)
         {
             path = FindPath(nodes[startPointIndex], nodes[endPointIndex]);
 
@@ -170,12 +170,30 @@ public class PointGeneration : MonoBehaviour
         var toSearch = new List<Node>() { startNode};
         var processed = new List<Node>();
         var nodeForPaths = new List<Node>(nodes);
+        var randNodeToDelete = new List<Node>();
 
-        int randIndex = Random.Range(0, nodeForPaths.Count);
+        int randIndex = 0;
 
-        if (nodeForPaths[randIndex].nodeType == eNodeType.eDefault)
+        if (path.Count != 0)
         {
-            nodeForPaths.RemoveAt(randIndex);
+            for (int i = 0; i < path.Count; i++)
+            {
+                if (path[i].nodeType == eNodeType.eDefault)
+                {
+                    randNodeToDelete.Add(path[i]);
+                }
+            }
+
+            randIndex = Random.Range(0, randNodeToDelete.Count);
+
+            for (int i = 0; i < nodeForPaths.Count; i++)
+            {
+                if (nodeForPaths[i].point == randNodeToDelete[randIndex].point)
+                {
+                    Debug.Log(nodeForPaths[i].point);
+                    nodeForPaths.RemoveAt(i);
+                }
+            }
         }
 
         while (toSearch.Any())
