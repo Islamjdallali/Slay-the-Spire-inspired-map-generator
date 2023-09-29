@@ -288,6 +288,7 @@ public class PointGeneration : MonoBehaviour
     {
         CreateNewPointsContainer();
         CreateNewTrianglesContainer();
+        CreateNewPathsContainer();
     }
 
     private void CreateNewPointsContainer()
@@ -308,6 +309,16 @@ public class PointGeneration : MonoBehaviour
         }
 
         TrianglesContainer = new GameObject(nameof(TrianglesContainer)).transform;
+    }
+
+    private void CreateNewPathsContainer()
+    {
+        if (PathsContainer != null)
+        {
+            Destroy(PathsContainer.gameObject);
+        }
+
+        PathsContainer = new GameObject(nameof(PathsContainer)).transform;
     }
 
     public void Generate()
