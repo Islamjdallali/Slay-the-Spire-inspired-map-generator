@@ -45,18 +45,28 @@ public class PointGeneration : MonoBehaviour
     public void GeneratePath()
     {
 
-        for (int j = 0; j < 3; j++)
-        {
-            path = FindPath(nodes[startPointIndex], nodes[endPointIndex]);
+        path = FindPath(nodes[startPointIndex], nodes[endPointIndex]);
 
-            for (int i = 0; i < path.Count; i++)
+        for (int i = 0; i < path.Count; i++)
+        {
+            if (i + 1 != path.Count)
             {
-                if (i + 1 != path.Count)
-                {
-                    CreateLine(PathsContainer, $"Path - {path[i]}", new Vector3[] { path[i].point.ToVector3(), path[i + 1].point.ToVector3() }, pathColor, triangleEdgeWidth, 0);
-                }
+                CreateLine(PathsContainer, $"Path - {path[i]}", new Vector3[] { path[i].point.ToVector3(), path[i + 1].point.ToVector3() }, pathColor, triangleEdgeWidth, 0);
             }
         }
+
+        //for (int j = 0; j < 5; j++)
+        //{
+        //    path = FindPath(nodes[startPointIndex], nodes[endPointIndex]);
+
+        //    for (int i = 0; i < path.Count; i++)
+        //    {
+        //        if (i + 1 != path.Count)
+        //        {
+        //            CreateLine(PathsContainer, $"Path - {path[i]}", new Vector3[] { path[i].point.ToVector3(), path[i + 1].point.ToVector3() }, pathColor, triangleEdgeWidth, 0);
+        //        }
+        //    }
+        //}
     }
 
     private void Create()
@@ -186,12 +196,14 @@ public class PointGeneration : MonoBehaviour
 
             randIndex = Random.Range(0, randNodeToDelete.Count);
 
+            Debug.Log(randIndex);
+
             for (int i = 0; i < nodeForPaths.Count; i++)
             {
                 if (nodeForPaths[i].point == randNodeToDelete[randIndex].point)
                 {
-                    Debug.Log(nodeForPaths[i].point);
-                    nodeForPaths.RemoveAt(i);
+                    Debug.Log(i);
+                    nodeForPaths[i].AddG(100);
                 }
             }
         }

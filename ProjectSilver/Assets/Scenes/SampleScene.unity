@@ -561,7 +561,7 @@ MonoBehaviour:
   pathColor: {r: 0, g: 1, b: 0, a: 1}
   lineMaterial: {fileID: 2100000, guid: fe60369f18361df418fb98a1ee9d6ea5, type: 2}
   generationSize: 5
-  generationMinDistance: 2
+  generationMinDistance: 0.5
 --- !u!4 &465653389
 Transform:
   m_ObjectHideFlags: 0

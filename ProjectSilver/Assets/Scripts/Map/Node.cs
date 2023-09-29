@@ -16,6 +16,8 @@ public class Node
     public float h { get; private set; }
     public float f => g + h;
 
+    public float a = 0;
+
     public Node connection;
 
     public Node(IPoint p, eNodeType t)
@@ -34,9 +36,14 @@ public class Node
         nodeType = eNodeType.eEnd;
     }
 
+    public void AddG(float add)
+    {
+        a = add;
+    }
+
     public void SetG(float G)
     {
-        g = G;
+        g = G + a;
     }
 
     public void SetH(float H)
