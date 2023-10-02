@@ -562,6 +562,8 @@ MonoBehaviour:
   lineMaterial: {fileID: 2100000, guid: fe60369f18361df418fb98a1ee9d6ea5, type: 2}
   generationSize: 5
   generationMinDistance: 0.5
+  numberOfPaths: 3
+  numberOfChangedNodes: 5
 --- !u!4 &465653389
 Transform:
   m_ObjectHideFlags: 0

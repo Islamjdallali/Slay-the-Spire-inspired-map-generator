@@ -37,6 +37,9 @@ public class PointGeneration : MonoBehaviour
 
     [SerializeField] List<Node> path = new List<Node>();
 
+    [SerializeField] int numberOfPaths;
+    [SerializeField] int numberOfChangedNodes;
+
     private void Start()
     {
         Clear();
@@ -45,28 +48,28 @@ public class PointGeneration : MonoBehaviour
     public void GeneratePath()
     {
 
-        path = FindPath(nodes[startPointIndex], nodes[endPointIndex]);
+        //path = FindPath(nodes[startPointIndex], nodes[endPointIndex]);
 
-        for (int i = 0; i < path.Count; i++)
-        {
-            if (i + 1 != path.Count)
-            {
-                CreateLine(PathsContainer, $"Path - {path[i]}", new Vector3[] { path[i].point.ToVector3(), path[i + 1].point.ToVector3() }, pathColor, triangleEdgeWidth, 0);
-            }
-        }
-
-        //for (int j = 0; j < 5; j++)
+        //for (int i = 0; i < path.Count; i++)
         //{
-        //    path = FindPath(nodes[startPointIndex], nodes[endPointIndex]);
-
-        //    for (int i = 0; i < path.Count; i++)
+        //    if (i + 1 != path.Count)
         //    {
-        //        if (i + 1 != path.Count)
-        //        {
-        //            CreateLine(PathsContainer, $"Path - {path[i]}", new Vector3[] { path[i].point.ToVector3(), path[i + 1].point.ToVector3() }, pathColor, triangleEdgeWidth, 0);
-        //        }
+        //        CreateLine(PathsContainer, $"Path - {path[i]}", new Vector3[] { path[i].point.ToVector3(), path[i + 1].point.ToVector3() }, pathColor, triangleEdgeWidth, 0);
         //    }
         //}
+
+        for (int j = 0; j < numberOfPaths; j++)
+        {
+            path = FindPath(nodes[startPointIndex], nodes[endPointIndex]);
+
+            for (int i = 0; i < path.Count; i++)
+            {
+                if (i + 1 != path.Count)
+                {
+                    CreateLine(PathsContainer, $"Path - {path[i]}", new Vector3[] { path[i].point.ToVector3(), path[i + 1].point.ToVector3() }, pathColor, triangleEdgeWidth, 0);
+                }
+            }
+        }
     }
 
     private void Create()
@@ -194,16 +197,19 @@ public class PointGeneration : MonoBehaviour
                 }
             }
 
-            randIndex = Random.Range(0, randNodeToDelete.Count);
 
-            Debug.Log(randIndex);
-
-            for (int i = 0; i < nodeForPaths.Count; i++)
+            for (int j = 0; j < numberOfChangedNodes; j++)
             {
-                if (nodeForPaths[i].point == randNodeToDelete[randIndex].point)
+                randIndex = Random.Range(0, randNodeToDelete.Count);
+
+                Debug.Log(randIndex);
+
+                for (int i = 0; i < nodeForPaths.Count; i++)
                 {
-                    Debug.Log(i);
-                    nodeForPaths[i].AddG(100);
+                    if (nodeForPaths[i].point == randNodeToDelete[randIndex].point)
+                    {
+                        nodeForPaths[i].AddG(100);
+                    }
                 }
             }
         }
