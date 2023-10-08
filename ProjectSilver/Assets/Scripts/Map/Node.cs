@@ -12,6 +12,8 @@ public class Node
     public IPoint point;
     public eNodeType nodeType;
 
+    public bool isFlagged = false;
+
     public float g { get; private set; }
     public float h { get; private set; }
     public float f => g + h;
@@ -54,5 +56,10 @@ public class Node
     public void SetConnection(Node node)
     {
         connection = node;
+    }
+
+    public void SetFlagged(bool f)
+    {
+        isFlagged = f;
     }
 }

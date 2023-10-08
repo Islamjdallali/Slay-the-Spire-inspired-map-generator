@@ -54,15 +54,20 @@ public class PointGeneration : MonoBehaviour
 
             for (int i = 0; i < path.Count; i++)
             {
-                if (path[i].nodeType == Node.eNodeType.eDefault)
+                if (!path[i].isFlagged)
                 {
-                    var pointGameObject = Instantiate(trianglePointPrefab);
-                    pointGameObject.transform.SetPositionAndRotation(path[i].point.ToVector3(), Quaternion.identity);
-                }
-                else
-                {
-                    var pointGameObject = Instantiate(startPointPrefab);
-                    pointGameObject.transform.SetPositionAndRotation(path[i].point.ToVector3(), Quaternion.identity);
+                    if (path[i].nodeType == Node.eNodeType.eDefault)
+                    {
+                        var pointGameObject = Instantiate(trianglePointPrefab);
+                        pointGameObject.transform.SetPositionAndRotation(path[i].point.ToVector3(), Quaternion.identity);
+                    }
+                    else
+                    {
+                        var pointGameObject = Instantiate(startPointPrefab);
+                        pointGameObject.transform.SetPositionAndRotation(path[i].point.ToVector3(), Quaternion.identity);
+                    }
+
+                    path[i].SetFlagged(true);
                 }
 
                 if (i + 1 != path.Count)
