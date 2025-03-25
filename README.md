@@ -13,4 +13,4 @@ Using an A* pathfinding algorithm, we find a path to our goal
 We run the A* pathfinding algorithm multiple times, each time *removing* a point that the map generator considers to add variety whilst also allowing for converging and diverging paths
 
 ![capture5](https://github.com/user-attachments/assets/4b692c1c-242b-450d-846d-ae76f68cd65e)
-Finally we remove points that we don't need anymore, leaving us with out map!
+Finally we remove points that we don't need anymore, leaving us with our map!
