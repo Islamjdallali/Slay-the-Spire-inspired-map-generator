@@ -25,6 +25,7 @@ public class PointGeneration : MonoBehaviour
     private Transform PointsContainer;
     private Transform TrianglesContainer;
     private Transform PathsContainer;
+    private Transform PathsPointContainer;
 
     [SerializeField] float triangleEdgeWidth = .01f;
 
@@ -47,7 +48,6 @@ public class PointGeneration : MonoBehaviour
 
     public void GeneratePath()
     {
-
         for (int j = 0; j < numberOfPaths; j++)
         {
             path = FindPath(nodes[startPointIndex], nodes[endPointIndex]);
@@ -58,12 +58,12 @@ public class PointGeneration : MonoBehaviour
                 {
                     if (path[i].nodeType == Node.eNodeType.eDefault)
                     {
-                        var pointGameObject = Instantiate(trianglePointPrefab);
+                        var pointGameObject = Instantiate(trianglePointPrefab,PathsPointContainer);
                         pointGameObject.transform.SetPositionAndRotation(path[i].point.ToVector3(), Quaternion.identity);
                     }
                     else
                     {
-                        var pointGameObject = Instantiate(startPointPrefab);
+                        var pointGameObject = Instantiate(startPointPrefab,PathsPointContainer);
                         pointGameObject.transform.SetPositionAndRotation(path[i].point.ToVector3(), Quaternion.identity);
                     }
 
@@ -77,8 +77,15 @@ public class PointGeneration : MonoBehaviour
             }
         }
 
-        Destroy(TrianglesContainer.gameObject);
-        Destroy(PointsContainer.gameObject);
+        if (TrianglesContainer != null)
+        {
+            Destroy(TrianglesContainer.gameObject);
+        }
+
+        if (PointsContainer != null)
+        {
+            Destroy(PointsContainer.gameObject);
+        }
     }
 
     private void Create()
@@ -314,6 +321,7 @@ public class PointGeneration : MonoBehaviour
         CreateNewPointsContainer();
         CreateNewTrianglesContainer();
         CreateNewPathsContainer();
+        CreateNewPathsPointContainer();
     }
 
     private void CreateNewPointsContainer()
@@ -346,6 +354,16 @@ public class PointGeneration : MonoBehaviour
         PathsContainer = new GameObject(nameof(PathsContainer)).transform;
     }
 
+    private void CreateNewPathsPointContainer()
+    {
+        if (PathsPointContainer != null)
+        {
+            Destroy(PathsPointContainer.gameObject);
+        }
+
+        PathsPointContainer = new GameObject(nameof(PathsPointContainer)).transform;
+    }
+
     public void Generate()
     {
         nodes.Clear();
@@ -361,6 +379,5 @@ public class PointGeneration : MonoBehaviour
 
         Debug.Log($"Generated Points Count {points.Count}");
         Create();
-        return;
     }
 }
